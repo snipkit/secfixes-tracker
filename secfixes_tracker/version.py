@@ -12,8 +12,21 @@ logger = logging.getLogger("APKVersion")
 logging.basicConfig(level=logging.WARNING)
 
 def _load_libapk():
+def _load_libapk():
+    """
+    Load the libapk shared library for version comparison.
+    
+    Warning: The APK_LIB_PATH environment variable allows loading arbitrary
+    shared libraries. Only use this in trusted environments.
+    """
     lib_path = os.getenv("APK_LIB_PATH")
+    if lib_path and not os.path.isfile(lib_path):
+        logger.warning(f"APK_LIB_PATH points to non-existent file: {lib_path}")
+        lib_path = None
     lib_names = [lib_path] if lib_path else [
+        # …rest of the original list initialization…
+    ]
+    # …rest of the function…
         'libapk.so.2.14.0',
         'libapk.so.2',
         'libapk.so',
