@@ -58,11 +58,10 @@ class APKVersionError(Exception):
 def _compare(ver1: str, ver2: str, ops: int, fuzzy: bool = False) -> bool:
     if libapk is None:
         raise APKVersionError("libapk is not loaded. Cannot compare versions.")
--    result = libapk.apk_version_compare(ver1.encode('ascii'), ver2.encode('ascii'))
-+    try:
-+        result = libapk.apk_version_compare(ver1.encode('ascii'), ver2.encode('ascii'))
-+    except UnicodeEncodeError as e:
-+        raise APKVersionError(f"Version string contains non-ASCII characters: {e}")
+    try:
+        result = libapk.apk_version_compare(ver1.encode('ascii'), ver2.encode('ascii'))
+    except UnicodeEncodeError as e:
+        raise APKVersionError(f"Version string contains non-ASCII characters: {e}")
     return (result & ops) != 0 if fuzzy else (result & ops) == ops
 
 class APKVersion:
