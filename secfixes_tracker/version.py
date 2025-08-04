@@ -60,12 +60,9 @@ class APKVersion:
     def _ensure_version(self, other):
         if isinstance(other, APKVersion):
             return other.version
-        elif isinstance(other, str):
-            return other
-        else:
-            raise TypeError(f"Cannot compare APKVersion with {type(other)}")
-
-    def __eq__(self, other):
+        def __eq__(self, other):
+            other_version = self._ensure_version(other)
+            return _compare(self.version, other_version, VersionEqual)
         try:
             other_version = self._ensure_version(other)
             return _compare(self.version, other_version, VersionEqual)
