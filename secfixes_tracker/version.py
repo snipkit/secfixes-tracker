@@ -18,6 +18,8 @@ def _load_libapk():
         'libapk.so.2',
         'libapk.so',
     ]
+    import errno
+
     for name in lib_names:
         if name is None:
             continue
@@ -27,8 +29,11 @@ def _load_libapk():
             lib.apk_version_compare.restype = c_int
             logger.info(f"Loaded libapk from {name}")
             return lib
-        except OSError:
-            logger.debug(f"Failed to load {name}")
+        except OSError as exc:
+            if hasattr(exc, 'errno') and exc.errno == errno.ENOENT:
+                logger.debug(f"Failed to load {name}: file not found ({exc})")
+            else:
+                logger.debug(f"Failed to load {name}: {exc}")
     logger.warning(f"Could not find libapk library ({lib_names}).")
     return None
 
